@@ -4,9 +4,15 @@ import 'react-table/react-table.css';
 import Button from '@material-ui/core/Button';
 import Addcar from './Addcar';
 import Editcar from './Editcar';
+import Snackbar from '@material-ui/core/Snackbar';
 
 export default function Carlist() {
     const [cars, setCars] = useState([]);
+    const [success, setSuccess] = useState({open: false, message: ''});
+
+    const handleClose = () => {
+     setSuccess(false);
+    };
 
     useEffect(() => fetchData(), []);
 
@@ -19,8 +25,14 @@ export default function Carlist() {
     const deleteCar = (link) => {
         if (window.confirm('Are you sure?')){
         fetch(link, {method: 'DELETE'})
-        .then(response => fetchData())
-        .catch(err => console.error(err))
+        .then(response => {
+            setSuccess({open: true, message: 'Car deleted'});
+            fetchData()
+        })
+        .catch(err => {
+            setSuccess({open: true, message: 'Error in deleting car'});
+            console.error(err)
+        })
         }
     }
 
@@ -32,8 +44,14 @@ export default function Carlist() {
             },
             body: JSON.stringify(car)
         })
-        .then (response => fetchData())
-        .catch(err => console.error(err))
+        .then(response => {
+            setSuccess({open: true, message: 'Car added'});
+            fetchData()
+        })
+        .catch(err => {
+            setSuccess({open: true, message: 'Error in adding car'});
+            console.error(err)
+        })
     }
 
     const updateCar = (car, link) => {
@@ -44,8 +62,14 @@ export default function Carlist() {
         },
         body: JSON.stringify(car)   
         })
-        .then (response => fetchData())
-        .catch(err => console.error(err))
+        .then(response => {
+            setSuccess({open: true, message: 'Car info edited'});
+            fetchData()
+        })
+        .catch(err => {
+            setSuccess({open: true, message: 'Error in editing car info'});
+            console.error(err)
+        })
     }
 
     const columns = [
@@ -97,6 +121,16 @@ export default function Carlist() {
 
     return(
         <div>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={success.open}
+                autoHideDuration={3000}
+                onClose={handleClose}
+                message={success.message}
+            />
             <Addcar saveCar={saveCar} />
             <ReactTable sortable={true} filterable={true} data={cars} columns={columns} />
         </div>

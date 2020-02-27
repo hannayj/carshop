@@ -11,6 +11,8 @@ export default function Addcar(props) {
     const [car, setCar] = useState({
         brand: '', model: '', color: '', fuel: '', year: '', price: ''
     });
+    const [yearError, setYearError] = useState(false);
+    const [priceError, setPriceError] = useState(false);
 
     const handleClickOpen = () => {
      setOpen(true);
@@ -25,8 +27,19 @@ export default function Addcar(props) {
     };
 
     const addCar = () => {
+        if(isNaN(car.year)===true && isNaN(car.price)===true){
+            setYearError(true);
+            setPriceError(true);
+        }
+        else if(isNaN(car.year)===true || car.year.length > 4) {
+            setYearError(true);
+            console.log(car.year);
+        } else if (isNaN(car.price)===true || car.price < 0) {
+            setPriceError(true);
+        } else {
         props.saveCar(car);
         handleClose();
+        }
     }
 
     return(
@@ -77,6 +90,8 @@ export default function Addcar(props) {
                 onChange={e => handleInputChange(e)}
                 label="Year"
                 fullWidth
+                error={yearError}
+                helperText={yearError ? 'Year needs to be 4-digit number.':''}
             />
             <TextField
                 margin="dense"
@@ -85,6 +100,8 @@ export default function Addcar(props) {
                 onChange={e => handleInputChange(e)}
                 label="Price"
                 fullWidth
+                error={priceError}
+                helperText={priceError ? 'Price needs to be a number.':''}
             />
             </DialogContent>
             <DialogActions>
